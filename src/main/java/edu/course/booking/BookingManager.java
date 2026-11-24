@@ -12,7 +12,9 @@ public class BookingManager {
     }
 
     public BookingResult processBooking(BookingRequest request) {
-        // Red stage: stub implementation that does not perform validation
+        if (request == null || !request.IsValid()) {
+            throw new IllegalArgumentException("Invalid booking request");
+        }
         return null;
     }
 }

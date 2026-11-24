@@ -38,7 +38,7 @@ public class BookingManagerTest {
     @DisplayName("M1-US2: Invalid request")
     void shouldRejectInvalidRequestsWithoutInvokingDependencies(String description, BookingRequest request) {
 
-        assertThrows(IllegalAccessException.class, () -> bookingManager.processBooking(request));
+        assertThrows(IllegalArgumentException.class, () -> bookingManager.processBooking(request));
 
         verifyNoInteractions(eventRepository, notificationService, paymentGateway);
     }
