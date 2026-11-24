@@ -10,4 +10,9 @@ public class BookingManager {
         this.paymentGateway = paymentGateway;
         this.notificationService = notificationService;
     }
+
+    public BookingResult processBooking(BookingRequest request) {
+        // Red stage: stub implementation that does not perform validation
+        return null;
+    }
 }
