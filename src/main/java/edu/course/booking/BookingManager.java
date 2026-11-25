@@ -1,14 +1,16 @@
 package edu.course.booking;
-import java.util.UUID;
+
 public class BookingManager {
     private final IEventRepository eventRepository;
     private final IPaymentGateway paymentGateway;
     private final INotificationService notificationService;
+    private final BookingFactory bookingFactory;
 
     public BookingManager(IEventRepository eventRepository, IPaymentGateway paymentGateway, INotificationService notificationService) {
         this.eventRepository = eventRepository;
         this.paymentGateway = paymentGateway;
         this.notificationService = notificationService;
+        this.bookingFactory = new BookingFactory();
     }
 
     
@@ -33,16 +35,13 @@ public BookingResult processBooking(BookingRequest request) {
         return BookingResult.paymentFailed(e.getMessage());
     }
 
-    String bookingId = UUID.randomUUID().toString();
-
-    Booking booking = new Booking(
-            bookingId,
-            customerId,
-            eventId,
-            request.getTicketQuantity(),
-            totalAmount,
-            transactionId
-    );
+    Booking booking = bookingFactory.createBooking(
+        customerId,
+        eventId,
+        request.getTicketQuantity(),
+        totalAmount,
+        transactionId
+);
 
     eventRepository.saveBooking(booking);
 

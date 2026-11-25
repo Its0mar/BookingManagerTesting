@@ -9,7 +9,7 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
+import org.mockito.ArgumentCaptor;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -39,35 +39,49 @@ public class BookingManagerTest {
 @DisplayName("M1-US1: Successful booking")
 void shouldProcessSuccessfulBooking() {
 
-    // Arrange
+    
     BookingRequest request =
-            new BookingRequest("CUST-1", "EVT-101", 3, 2500);
+    new BookingRequest("CUST-1", "EVT-101", 3, 2500);
 
     when(eventRepository.isSoldOut("EVT-101"))
-            .thenReturn(false);
+    .thenReturn(false);
 
     when(paymentGateway.processPayment(7500))
-            .thenReturn("TXN-123");
-
-    // Act
+    .thenReturn("TXN-123");
+    
     BookingResult result = bookingManager.processBooking(request);
 
-    // Assert
+    
     assertNotNull(result);
     assertEquals(BookingStatus.SUCCESS, result.getStatus());
     assertEquals("TXN-123", result.getTransactionId());
 
     verify(eventRepository, times(1))
-            .isSoldOut("EVT-101");
+    .isSoldOut("EVT-101");
 
     verify(paymentGateway, times(1))
-            .processPayment(7500);
+    .processPayment(7500);
 
-    verify(eventRepository, times(1))
-            .saveBooking(any(Booking.class));
+
+        ArgumentCaptor<Booking> bookingCaptor =ArgumentCaptor.forClass(Booking.class);
+
+        verify(eventRepository, times(1))
+        .saveBooking(bookingCaptor.capture());
+
+        Booking savedBooking = bookingCaptor.getValue();
+
+        assertNotNull(savedBooking);
+        assertNotNull(savedBooking.getBookingId());
+        assertFalse(savedBooking.getBookingId().isBlank());
+
+        assertEquals("CUST-1", savedBooking.getCustomerId());
+        assertEquals("EVT-101", savedBooking.getEventId());
+        assertEquals(3, savedBooking.getTicketQuantity());
+        assertEquals(7500, savedBooking.getTotalAmountInCents());
+        assertEquals("TXN-123", savedBooking.getTransactionId());
 
     verify(notificationService, times(1))
-            .sendConfirmation("CUST-1", "EVT-101", "TXN-123");
+    .sendConfirmation("CUST-1", "EVT-101", "TXN-123");
 }
 
 
