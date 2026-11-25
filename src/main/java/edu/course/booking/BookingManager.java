@@ -1,5 +1,5 @@
 package edu.course.booking;
-
+import java.util.UUID;
 public class BookingManager {
     private final IEventRepository eventRepository;
     private final IPaymentGateway paymentGateway;
@@ -11,10 +11,50 @@ public class BookingManager {
         this.notificationService = notificationService;
     }
 
-    public BookingResult processBooking(BookingRequest request) {
-        validateRequest(request);
-        return null;
+    
+public BookingResult processBooking(BookingRequest request) {
+    validateRequest(request);
+
+    String eventId = request.getEventId();
+    String customerId = request.getCustomerId();
+
+    if (eventRepository.isSoldOut(eventId)) {
+        return BookingResult.soldOut(eventId);
     }
+
+    int totalAmount = request.getTicketQuantity()
+            * request.getPricePerTicketInCents();
+
+    String transactionId;
+
+    try {
+        transactionId = paymentGateway.processPayment(totalAmount);
+    } catch (PaymentFailedException e) {
+        return BookingResult.paymentFailed(e.getMessage());
+    }
+
+    String bookingId = UUID.randomUUID().toString();
+
+    Booking booking = new Booking(
+            bookingId,
+            customerId,
+            eventId,
+            request.getTicketQuantity(),
+            totalAmount,
+            transactionId
+    );
+
+    eventRepository.saveBooking(booking);
+
+    notificationService.sendConfirmation(
+            customerId,
+            eventId,
+            transactionId
+    );
+
+    return BookingResult.success(transactionId);
+}
+
 
     private void validateRequest(BookingRequest request) {
         if (request == null) {
