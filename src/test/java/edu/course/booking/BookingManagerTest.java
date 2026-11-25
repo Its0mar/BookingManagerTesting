@@ -1,6 +1,7 @@
 package edu.course.booking;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -32,6 +33,43 @@ public class BookingManagerTest {
     private  void setUp() {
         bookingManager = new BookingManager(eventRepository, paymentGateway, notificationService);
     }
+
+
+@Test
+@DisplayName("M1-US1: Successful booking")
+void shouldProcessSuccessfulBooking() {
+
+    // Arrange
+    BookingRequest request =
+            new BookingRequest("CUST-1", "EVT-101", 3, 2500);
+
+    when(eventRepository.isSoldOut("EVT-101"))
+            .thenReturn(false);
+
+    when(paymentGateway.processPayment(7500))
+            .thenReturn("TXN-123");
+
+    // Act
+    BookingResult result = bookingManager.processBooking(request);
+
+    // Assert
+    assertNotNull(result);
+    assertEquals(BookingStatus.SUCCESS, result.getStatus());
+    assertEquals("TXN-123", result.getTransactionId());
+
+    verify(eventRepository, times(1))
+            .isSoldOut("EVT-101");
+
+    verify(paymentGateway, times(1))
+            .processPayment(7500);
+
+    verify(eventRepository, times(1))
+            .saveBooking(any(Booking.class));
+
+    verify(notificationService, times(1))
+            .sendConfirmation("CUST-1", "EVT-101", "TXN-123");
+}
+
 
     @ParameterizedTest(name = "[{index}] {0}")
     @MethodSource("invalidBookingRequests")

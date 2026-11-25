@@ -1,5 +1,5 @@
 package edu.course.booking;
 
 public interface IPaymentGateway {
-    String processPayment() throws PaymentFailedException;
+String processPayment(int amountInCents) throws PaymentFailedException;
 }
