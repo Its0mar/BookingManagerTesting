@@ -110,5 +110,52 @@ void shouldProcessSuccessfulBooking() {
                 Arguments.of("Price per ticket is zero (<= 0)", new BookingRequest("CUST-1", "EVT-101", 2, 0)),
                 Arguments.of("Price per ticket is negative (<= 0)", new BookingRequest("CUST-1", "EVT-101", 2, -500))
         );
+
     }
+
+
+    @Test
+    @DisplayName("M1-US3: Sold-out event")
+    void shouldRejectBookingWhenEventIsSoldOut() {
+
+        BookingRequest request =new BookingRequest("CUST-1", "EVT-101", 3, 2500);
+
+        when(eventRepository.isSoldOut("EVT-101"))
+                .thenReturn(true);
+
+        BookingResult result = bookingManager.processBooking(request);
+
+        assertNotNull(result);
+        assertEquals(BookingStatus.SOLD_OUT, result.getStatus());
+
+        verify(eventRepository, times(1)).isSoldOut("EVT-101");
+        verify(eventRepository, never()).saveBooking(any());
+        verifyNoInteractions(paymentGateway, notificationService);
+        verifyNoMoreInteractions(eventRepository);
+    }
+    @Test
+    @DisplayName("M1-US4: Payment failure")
+    void shouldRejectBookingWhenPaymentFails() {
+
+        BookingRequest request=new BookingRequest("CUST-1","EVT-101",3,2500);
+        when(eventRepository.isSoldOut("EVT-101"))
+                .thenReturn(false);
+
+
+        when(paymentGateway.processPayment(7500))
+                .thenThrow(new PaymentFailedException("Payment failed"));
+
+        BookingResult result = bookingManager.processBooking(request);
+
+        assertNotNull(result);
+        assertEquals(BookingStatus.PAYMENT_FAILED,result.getStatus());
+
+        verify(eventRepository,times(1)).isSoldOut("EVT-101");
+        verify(paymentGateway, times(1)).processPayment(7500);
+        verifyNoInteractions(notificationService);
+        verify(eventRepository, never()).saveBooking(any());
+        verifyNoMoreInteractions(paymentGateway,eventRepository);
+
+    }
+
 }
