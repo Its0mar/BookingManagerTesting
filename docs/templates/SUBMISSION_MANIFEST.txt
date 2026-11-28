@@ -10,18 +10,18 @@ TEAM MEMBERS
 3. Loiy Malaeb / 2434236 / loaymalaeb
 
 REPOSITORY
-Repository URL: 
-Final commit hash:
-Java version:
-Maven version:
+Repository URL: https://github.com/Its0mar/BookingManagerTesting
+Final commit hash: a426580
+Java version: 27.0.1.1
+Maven version: Apache Maven 3.10.2
 Build and test command: mvn clean test
-Test execution result: [PASS / FAIL]
-Number of tests executed:
+Test execution result: PASS
+Number of tests executed: 19
 
 AI USE DECLARATION
 Select one:
 [ ] No generative AI or coding assistant materially influenced assessed work.
-[ ] Generative AI or coding assistants materially influenced assessed work, and the AI Use Log is included in the report appendix.
+[X] Generative AI or coding assistants materially influenced assessed work, and the AI Use Log is included in the report appendix.
 
 We confirm that all AI-assisted output was reviewed and verified, all submitted work can be explained and modified by the team, and no Git history, test results, references, or contribution evidence was fabricated.
 
@@ -29,4 +29,9 @@ CONTRIBUTION DECLARATION
 We confirm that the contribution matrix and repository history accurately represent the work of the team.
 
 Names and signatures or typed confirmations:
-Date:
+
+Omar Jadallah / 2332725 - Confirmed
+Sanad Silmi / 2332711 - Confirmed
+Loiy Malaeb / 2434236 - Confirmed
+
+Date: 28/11/2026
