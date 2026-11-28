@@ -1,16 +1,16 @@
 SOFTWARE TESTING PROJECT SUBMISSION MANIFEST
 
 Course: Software Testing (2010031410)
-Milestone: [1 or 2]
+Milestone: 1
 Group number:
 
 TEAM MEMBERS
-1. Name / Student ID / GitHub username:
-2. Name / Student ID / GitHub username:
-3. Name / Student ID / GitHub username:
+1. Omar Jadallah / 2332725 / Its0mar
+2. Sanad Silmi / 2332711 / silmisanad-jpg
+3. Loiy Malaeb / 2434236 / loaymalaeb
 
 REPOSITORY
-Repository URL:
+Repository URL: 
 Final commit hash:
 Java version:
 Maven version:
